@@ -1,0 +1,22 @@
+# Бот «Зміни на завтра» на сервері гри - окремо від Mer Tomi (свій проєкт
+# compose `zminy`, своя папка ~/zminy-bot): публікації гри його не чіпають.
+name: zminy
+
+services:
+  bot:
+    build: .  # Dockerfile: Python + Pillow + шрифт для картинки з графіком
+    image: zminy-bot:latest
+    restart: unless-stopped
+    working_dir: /app
+    command: ["python", "bot.py"]
+    volumes:
+      - ./:/app
+    environment:
+      TZ: ${TIMEZONE:-Europe/Kyiv}  # сервер живе за UTC, а 20:00 - за Києвом
+      PYTHONUNBUFFERED: "1"
+    mem_limit: 256m  # картинка й xlsx-вивантаження таблиці
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "3"
